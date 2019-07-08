@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ModLoader">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_ModLoader\ModLoader.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,6 +44,24 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FreeCam.cs" />
@@ -48,6 +69,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)\bin\Debug\FreeCam.dll" "A:\Program Files\Steam\steamapps\common\VTOL VR\mods\FreeCam.dll"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)\bin\Debug\FreeCam.dll" "A:\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_ModLoader\mods\FreeCam.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -3,28 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TestingMod
+[Info("Testing Mod","Just Testing","","0.0.0")]
+public class TestingMod : VTOLMOD
 {
-    public class Load
+
+    private void Start()
     {
-        public static void Init()
-        {
-            new GameObject("Testing Mod", typeof(TestingMod));
-        }
+        StartCoroutine(Delay());
     }
 
-    public class TestingMod : MonoBehaviour
+    IEnumerator Delay()
     {
-        
-        private void Start()
-        {
-            StartCoroutine(Delay());
-        }
-
-        IEnumerator Delay()
-        {
-            yield return new WaitForSeconds(2);
-            Debug.Log(Application.unityVersion);
-        }
+        yield return new WaitForSeconds(2);
+        Debug.Log(Application.unityVersion);
     }
 }
+

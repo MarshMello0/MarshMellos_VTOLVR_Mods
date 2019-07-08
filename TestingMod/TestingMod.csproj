@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ModLoader">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_ModLoader\ModLoader.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,6 +45,9 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestingMod.cs" />
@@ -49,6 +55,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)\bin\Debug\TestingMod.dll" "A:\Program Files\Steam\steamapps\common\VTOL VR\mods\TestingMod.dll"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)\bin\Debug\TestingMod.dll" "A:\Program Files\Steam\steamapps\common\VTOL VR\VTOLVR_ModLoader\mods\TestingMod.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
