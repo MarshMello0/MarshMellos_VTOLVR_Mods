@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleMod", "ConsoleMod\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeCam", "FreeCam\FreeCam.csproj", "{4169143B-4B87-42F1-A598-3970CDE4EE42}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TexturePacks", "TexturePacks\TexturePacks.csproj", "{34A5B81C-1F5D-4980-817B-22FE49F0FD25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnlimitedAmmo", "UnlimitedAmmo\UnlimitedAmmo.csproj", "{142F77D5-A601-423B-9594-06791CB49589}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveTrees", "RemoveTrees\RemoveTrees.csproj", "{1F744BC7-E97F-4CF0-9978-EE4AC244E76E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicShuffle", "MusicShuffle\MusicShuffle.csproj", "{F298B35E-A63A-4DB2-8563-A9F569841A2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +35,22 @@ Global
 		{4169143B-4B87-42F1-A598-3970CDE4EE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4169143B-4B87-42F1-A598-3970CDE4EE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4169143B-4B87-42F1-A598-3970CDE4EE42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34A5B81C-1F5D-4980-817B-22FE49F0FD25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34A5B81C-1F5D-4980-817B-22FE49F0FD25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34A5B81C-1F5D-4980-817B-22FE49F0FD25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34A5B81C-1F5D-4980-817B-22FE49F0FD25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{142F77D5-A601-423B-9594-06791CB49589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{142F77D5-A601-423B-9594-06791CB49589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{142F77D5-A601-423B-9594-06791CB49589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{142F77D5-A601-423B-9594-06791CB49589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F744BC7-E97F-4CF0-9978-EE4AC244E76E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F744BC7-E97F-4CF0-9978-EE4AC244E76E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F744BC7-E97F-4CF0-9978-EE4AC244E76E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F744BC7-E97F-4CF0-9978-EE4AC244E76E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F298B35E-A63A-4DB2-8563-A9F569841A2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F298B35E-A63A-4DB2-8563-A9F569841A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F298B35E-A63A-4DB2-8563-A9F569841A2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F298B35E-A63A-4DB2-8563-A9F569841A2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
