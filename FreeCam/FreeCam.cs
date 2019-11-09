@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-[Info("Free Cam","Adds a button to spawn camera to fly around the world","","1.1.0")]
 public class FreeCam : VTOLMOD
 {
     public bool isAttached;
@@ -21,6 +20,8 @@ public class FreeCam : VTOLMOD
             Destroy(this.gameObject);
             return;
         }
+
+        Log("Free Cam Loaded");
     }
 
     private void Update()
@@ -63,11 +64,13 @@ public class FreeCam : VTOLMOD
         {
             script.enabled = false;
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
         if (isAttached && !script.enabled && GUI.Button(new Rect(Screen.width - 150, 20, 150, 20), "Enable Mouse Lock"))
         {
             script.enabled = true;
-            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         if (isAttached)

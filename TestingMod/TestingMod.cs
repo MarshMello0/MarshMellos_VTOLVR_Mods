@@ -2,20 +2,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Harmony;
+using System.Reflection;
 
-[Info("Testing Mod","Just Testing","","0.0.0")]
 public class TestingMod : VTOLMOD
 {
-
     private void Start()
     {
-        StartCoroutine(Delay());
+        var harmony = HarmonyInstance.Create("com.asdasdas.asdads.adsdsa");
+        harmony.PatchAll(Assembly.GetExecutingAssembly());
     }
 
-    IEnumerator Delay()
+    [HarmonyPatch(typeof(VRHandController))]
+    [HarmonyPatch("Update")]
+    class Patch
     {
-        yield return new WaitForSeconds(2);
-        Debug.Log(Application.unityVersion);
+        static void Postfix()
+        {
+            Debug.Log("Hello World");
+        }
     }
 }
 
