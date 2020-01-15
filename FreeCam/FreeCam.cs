@@ -99,11 +99,3 @@ public class FreeCam : VTOLMOD
 
     }
 }
-
-public static class FreeCamConsole
-{
-    public static void Log(object message)
-    {
-        Debug.Log("FreeCam: " + message);
-    }
-}
