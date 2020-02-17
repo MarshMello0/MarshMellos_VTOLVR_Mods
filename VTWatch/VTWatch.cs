@@ -12,22 +12,24 @@ public class VTWatch : VTOLMOD
     private bool updateText;
     private TimeSpan lastTime;
     public static UnityAction<bool> callback;
+    private static bool use24H;
     public override void ModLoaded()
     {
         updateText = false;
         VTOLAPI.SceneLoaded += SceneLoaded;
         ReadyRoom();
 
-        callback += Test;
+        callback += Use24HChanged;
         Settings setting = new Settings(this);
-        setting.CreateBoolSetting("My Bool", callback);
+        setting.CreateBoolSetting("Use 24 hour clock", callback);
         VTOLAPI.CreateSettingsMenu(setting);
         Log("Loaded!");
     }
 
-    private void Test(bool arg0)
+    private void Use24HChanged(bool arg0)
     {
-        Log("Bool Setting Pressed " + arg0);
+        Log("Changed use24H to " + arg0);
+        use24H = arg0;
     }
 
     private GameObject CreatePrefab()
@@ -46,7 +48,10 @@ public class VTWatch : VTOLMOD
         if (updateText)
         {
             lastTime = DateTime.Now.TimeOfDay;
-            currentText.text = $"{((lastTime.Hours % 12 ) < 10 ? "0" : "")}{lastTime.Hours % 12}:{(lastTime.Minutes < 10 ? "0" : "")}{lastTime.Minutes} {(lastTime.Hours > 11? "PM": "AM")}";
+            if (use24H)
+                currentText.text = $"{((lastTime.Hours) < 10 ? "0" : "")}{lastTime.Hours}:{(lastTime.Minutes < 10 ? "0" : "")}{lastTime.Minutes}";
+            else
+                currentText.text = $"{((lastTime.Hours % 12 ) < 10 ? "0" : "")}{lastTime.Hours % 12}:{(lastTime.Minutes < 10 ? "0" : "")}{lastTime.Minutes} {(lastTime.Hours > 11? "PM": "AM")}";
         }
     }
 
