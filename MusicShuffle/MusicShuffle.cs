@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 using System.Reflection;
 using Random = System.Random;
 
@@ -15,7 +10,7 @@ public class MusicShuffle : VTOLMOD
 
     private void Start()
     {
-        HarmonyInstance instance = HarmonyInstance.Create(harmonyID);
+        Harmony instance = new Harmony(harmonyID);
         instance.PatchAll(Assembly.GetExecutingAssembly());
     }
 
