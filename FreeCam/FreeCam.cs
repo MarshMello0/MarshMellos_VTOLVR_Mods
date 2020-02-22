@@ -1,101 +1,81 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
 public class FreeCam : VTOLMOD
 {
-    public bool isAttached;
-    private FlyCamera script;
-    private static FreeCam _instance;
-
-    private bool hudActive = true;
-    private bool followPlayer = false;
-    private float mouseSensitivity, mouseSmoothing;
+    private static readonly string assetsPath = @"VTOLVR_ModLoader\mods\FreeCam\freecam.assets";
+    private static AssetBundle asset;
+    private static GameObject canvasPrefab;
+    public static GameObject cameraPrefab;
     private void Awake()
     {
-        _instance = this;
+        StartCoroutine(Load());
     }
 
-    private void Update()
+    private IEnumerator Load()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        Log("Loading Asset Bundle");
+        AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(assetsPath);
+        yield return request;
+        asset = request.assetBundle;
+        if (asset == null)
         {
-            hudActive = !hudActive;
+            LogError("Assets is null\nFree Cam won't continue");
         }
-    }
-    private void OnGUI()
-    {
-        if (!hudActive)
-            return;
-        GUI.Label(new Rect(Screen.width - 300, 0, 150, 20), "Press P to hide buttons");
-        if (!isAttached && GUI.Button(new Rect(Screen.width - 150, 0, 150, 20), "Enable Free Cam"))
+        else
         {
-            Cursor.lockState = CursorLockMode.Confined;
-            if (!script)
-            {
-                GameObject go = new GameObject("Free Cam", typeof(Camera), typeof(FlyCamera));
-                script = go.GetComponent<FlyCamera>();
-                go.GetComponent<Camera>().farClipPlane = 999999;
-                go.tag = "MainCamera";
-                script.enabled = false; //We want to start with mouse look disabled.
-            }
-            else
-            {
-                script.gameObject.SetActive(true);
-                script.enabled = false;
-            }
-            isAttached = true;
+            Log("Assets Bundle is loaded");
+            //Storing the prefab in memory to spawn
+            AssetBundleRequest canvasRequest = asset.LoadAssetAsync<GameObject>("Free Cam - Canvas");
+            AssetBundleRequest cameraRequest = asset.LoadAssetAsync<GameObject>("Free Cam - Camera");
+            yield return canvasRequest;
+            yield return cameraRequest;
+            canvasPrefab = canvasRequest.asset as GameObject;
+            cameraPrefab = cameraRequest.asset as GameObject;
+            //Adding the scripts to the prefab;
+            Log("Adding Scripts");
+            UIManager manager = canvasPrefab.AddComponent<UIManager>();
+            manager.openPos = canvasPrefab.transform.GetChild(0).GetComponent<RectTransform>();
+            manager.closePos = canvasPrefab.transform.GetChild(1).GetComponent<RectTransform>();
+            manager.rectTransform = canvasPrefab.transform.GetChild(2).GetComponent<RectTransform>();
+            manager.movementCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0, 0), new Keyframe(1, 1) });
+            manager.time = 1f;
+            Log("Adding mouse overs");
+            manager.toggleUI = canvasPrefab.transform.GetChild(2).GetChild(1).GetChild(0).gameObject.AddComponent<MouseOver>();
+            manager.freecamOver = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(1).gameObject.AddComponent<MouseOver>();
+            manager.freecamText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+            manager.mouselookOver = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(2).gameObject.AddComponent<MouseOver>();
+            manager.mouselookText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>();
+            manager.refreshActorsOver = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(9).gameObject.AddComponent<MouseOver>();
+            Log("Getting Texts");
+            manager.speedText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(4).GetComponent<TextMeshProUGUI>();
+            manager.sSpeedText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(5).GetComponent<TextMeshProUGUI>();
+            manager.sensitivityText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(6).GetComponent<TextMeshProUGUI>();
+            manager.fovText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(7).GetComponent<TextMeshProUGUI>();
+            Log("Getting Sliders");
+            manager.speedSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(4).GetComponentInChildren<Slider>();
+            manager.sSpeedSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(5).GetComponentInChildren<Slider>();
+            manager.sensitivitySlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(6).GetComponentInChildren<Slider>();
+            manager.fovSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(7).GetComponentInChildren<Slider>();
+            Log("Adding Dropdown");
+            manager.actorDropdown = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(8).GetComponentInChildren<TMP_Dropdown>();
 
-        }
+            UIManager.speed = manager.speedSlider.value;
+            UIManager.sSpeed = manager.sSpeedSlider.value;
+            UIManager.sensitivity = manager.sensitivitySlider.value;
+            UIManager.fov = manager.fovSlider.value;
 
-        if (!isAttached)
-            return;
+            manager.speedText.text += " = " + UIManager.speed;
+            manager.sSpeedText.text += " = " + UIManager.sSpeed;
+            manager.sensitivityText.text += " = " + UIManager.sensitivity;
+            manager.fovText.text += " = " + UIManager.fov;
 
-        if (GUI.Button(new Rect(Screen.width - 150, 0, 150, 20), "Disable Free Cam"))
-        {
-            script.gameObject.SetActive(false);
-            isAttached = false;
-            Cursor.lockState = CursorLockMode.None;
+            Log("Spawned!");
+            DontDestroyOnLoad(Instantiate(canvasPrefab));
         }
-        if (script.enabled && GUI.Button(new Rect(Screen.width - 150, 20, 150, 20), "Disable Mouse Lock") || isAttached && Input.GetKeyDown(KeyCode.Escape))
-        {
-            script.enabled = false;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else if (!script.enabled && GUI.Button(new Rect(Screen.width - 150, 20, 150, 20), "Enable Mouse Lock"))
-        {
-            script.enabled = true;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-
-        GUI.Label(new Rect(Screen.width - 150, 40, 150, 20), "Mouse Sensitivity: " + script.sensitivity.x);
-        mouseSensitivity = (float)Math.Round(GUI.HorizontalSlider(new Rect(Screen.width - 150, 60, 150, 20), script.sensitivity.x, 0, 10), 2);
-        script.sensitivity = new Vector2(mouseSensitivity, mouseSensitivity);
-        GUI.Label(new Rect(Screen.width - 150, 80, 150, 20), "Mouse Smoothing: " + script.smoothing.x);
-        mouseSmoothing = (float)Math.Round(GUI.HorizontalSlider(new Rect(Screen.width - 150, 100, 150, 20), script.smoothing.x, 1, 10), 2);
-        script.smoothing = new Vector2(mouseSmoothing, mouseSmoothing);
-        GUI.Label(new Rect(Screen.width - 150, 120, 150, 20), "Movement Speed: " + script.speed);
-        script.speed = (float)Math.Round(GUI.HorizontalSlider(new Rect(Screen.width - 150, 140, 150, 20), script.speed, 0.1f, 10), 2);
-        GUI.Label(new Rect(Screen.width - 150, 160, 150, 20), "Sprint Speed: " + script.fastSpeed);
-        script.fastSpeed = (float)Math.Round(GUI.HorizontalSlider(new Rect(Screen.width - 150, 180, 150, 20), script.fastSpeed, 0.2f, 10), 2);
-
-        if (!followPlayer && GUI.Button(new Rect(Screen.width - 150, 200, 150, 20), "Follow Player"))
-        {
-            VRSDKSwitcher switcher = FindObjectOfType<VRSDKSwitcher>();
-            if (switcher == null)
-            {
-                LogError("Couldn't find player's SDK Switcher");
-                return;
-            }
-            script.transform.SetParent(switcher.transform);
-            followPlayer = true;
-        }
-        else if (followPlayer && GUI.Button(new Rect(Screen.width - 150, 200, 150, 20), "Detach from Player"))
-        {
-            followPlayer = false;
-            script.transform.parent = null;
-        }
-
     }
 }
