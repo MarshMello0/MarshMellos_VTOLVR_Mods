@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using Harmony;
+﻿using HarmonyLib;
 using System.Reflection;
 
 public class RemoveTrees : VTOLMOD
@@ -14,18 +7,16 @@ public class RemoveTrees : VTOLMOD
 
     private void Start()
     {
-        HarmonyInstance instance = HarmonyInstance.Create(harmonyID);
-        instance.PatchAll(Assembly.GetExecutingAssembly());
+        Harmony harmony = new Harmony(harmonyID);
+        harmony.PatchAll(Assembly.GetExecutingAssembly());
     }
 }
-
-[HarmonyPatch(typeof(TreeParticleMaster))]
-[HarmonyPatch("Start")]
-class Patch
+[HarmonyPatch(typeof(VTTMapTrees.TreeJob), "CreateTree")]
+public static class Patch_TreeMaster
 {
-    static bool Prefix(TreeParticleMaster treeParticleMaster)
+    [HarmonyPrefix]
+    public static bool Prefix()
     {
-        treeParticleMaster.treeBlocksPerChunk = 0;
         return false;
     }
 }
