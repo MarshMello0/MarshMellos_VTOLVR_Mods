@@ -1,81 +1,60 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Harmony;
 using System.Reflection;
-
 public class TestingMod : VTOLMOD
 {
-    Gun GAU1Gun;
-    Gun GAU2Gun;
-    Gun GAU3Gun;
-    Gun GAU4Gun, GAUGun;
-    bool isFiring;
-    bool previous = true;
-    private void Start()
+    private static readonly string assetsPath = @"VTOLVR_ModLoader\mods\TestingMod\assets.bundle";
+    private static AssetBundle asset;
+    public override void ModLoaded()
     {
+        base.ModLoaded();
+        StartCoroutine(LoadAssetBundle());
         SceneManager.sceneLoaded += SceneLoaded;
     }
 
     private void SceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
-        if (arg0.buildIndex == 7)
-            StartCoroutine(SpawnGuns());
+        if (arg0.buildIndex == 7 || arg0.buildIndex == 12)
+            StartCoroutine(CreatePlane());
     }
 
-    private void Update()
+    private IEnumerator LoadAssetBundle()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 7 && GAUGun != null)
+        AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(assetsPath);
+        yield return request;
+        asset = request.assetBundle;
+        if (asset == null)
+            LogError("Assets is null");
+        else
+            Log("Assets Bundle is loaded");
+    }
+    private IEnumerator CreatePlane()
+    {
+        while (VTMapManager.fetch == null || !VTMapManager.fetch.scenarioReady)
         {
-            isFiring = (bool)Traverse.Create(GAUGun).Field("firing").GetValue();
-            if (isFiring != previous)
-            {
-                previous = isFiring;
-                Fire(isFiring);
-            }
+            yield return null;
         }
+
+        if (asset == null)
+        {
+            LogError("Assets was null when creating plane");
+        }
+        GameObject player = VTOLAPI.instance.GetPlayersVehicleGameObject();
+        GameObject prefab = asset.LoadAsset<GameObject>("A-15F Prefab");
+        GameObject vehicle = Instantiate(prefab,player.transform.position + new Vector3(-30,10,-30), player.transform.rotation);
+        Log("Spawned");
+
+        GameObject camRig = GameObject.Find("CameraRigParent");
+        if (camRig == null)
+            LogError("Camera Rig Was Null");
+        camRig.transform.parent = vehicle.transform.Find("EjectorSeat");
+        //camRig.transform.localPosition = new Vector3(-15.13126f, -3.32916e-06f, 8.728076e-07f);
+        Log("Moved the new camera rig");
     }
-
-
-    private IEnumerator SpawnGuns()
-    {
-        yield return new WaitForSeconds(2);
-        GameObject HP1 = GameObject.Find("HP1");
-        GameObject HP2 = GameObject.Find("HP2");
-        GameObject HP3 = GameObject.Find("HP3");
-        GameObject HP4 = GameObject.Find("HP4");
-        GameObject GAU = GameObject.Find("gau-8");
-
-        Log($"HP1={HP1} HP2={HP2} HP3={HP3} HP4={HP4} GAU={GAU}");
-
-        GameObject newGAU1 = Instantiate(GAU, HP1.transform);
-        GameObject newGAU2 = Instantiate(GAU, HP2.transform);
-        GameObject newGAU3 = Instantiate(GAU, HP3.transform);
-        GameObject newGAU4 = Instantiate(GAU, HP4.transform);
-
-        GAU1Gun = newGAU1.GetComponent<Gun>();
-        GAU2Gun = newGAU2.GetComponent<Gun>();
-        GAU3Gun = newGAU3.GetComponent<Gun>();
-        GAU4Gun = newGAU4.GetComponent<Gun>();
-
-        GAUGun = GAU.GetComponent<Gun>();
-
-        newGAU1.transform.localPosition = new Vector3(0,-0.738f, 0);
-        newGAU2.transform.localPosition = new Vector3(0, -0.738f, 0);
-        newGAU3.transform.localPosition = new Vector3(0, -0.738f, 0);
-        newGAU4.transform.localPosition = new Vector3(0, -0.738f, 0);
-    }
-
-    public void Fire(bool firing)
-    {
-        Log("Firing!!!");
-        GAU1Gun.SetFire(firing);
-        GAU2Gun.SetFire(firing);
-        GAU3Gun.SetFire(firing);
-        GAU4Gun.SetFire(firing);
-    }
-
 }
 
