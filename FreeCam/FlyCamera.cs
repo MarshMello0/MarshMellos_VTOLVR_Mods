@@ -6,7 +6,6 @@ public class FlyCamera : MonoBehaviour
     Vector2 _smoothMouse;
 
     public Vector2 clampInDegrees = new Vector2(360, 180);
-    public Vector2 smoothing = new Vector2(10, 10);
     public Vector2 targetDirection;
     public Vector2 targetCharacterDirection;
 
@@ -28,7 +27,7 @@ public class FlyCamera : MonoBehaviour
         Position();
         if (enabled)
         {
-            SmoothMouseLook();
+            MouseLook();
             Movement();
         }
     }
@@ -75,7 +74,7 @@ public class FlyCamera : MonoBehaviour
 
     }
 
-    private void SmoothMouseLook()
+    private void MouseLook()
     {
         // Allow the script to clamp based on a desired target value.
         var targetOrientation = Quaternion.Euler(targetDirection);
@@ -83,15 +82,10 @@ public class FlyCamera : MonoBehaviour
 
         Vector3 mouseDelta = UIUtils.RewiredMouseInput() * 0.2f;
         // Scale input against the sensitivity setting and multiply that against the smoothing value.
-        mouseDelta = Vector2.Scale(mouseDelta, new Vector2(UIManager.sensitivity * smoothing.x, UIManager.sensitivity * smoothing.y));
-
-
-        // Interpolate mouse movement over time to apply smoothing delta.
-        _smoothMouse.x = Mathf.Lerp(_smoothMouse.x, mouseDelta.x, 1f / smoothing.x);
-        _smoothMouse.y = Mathf.Lerp(_smoothMouse.y, mouseDelta.y, 1f / smoothing.y);
+        mouseDelta = Vector2.Scale(mouseDelta, new Vector2(UIManager.sensitivity, UIManager.sensitivity));
 
         // Find the absolute mouse movement value from point zero.
-        _mouseAbsolute += _smoothMouse;
+        _mouseAbsolute += new Vector2(mouseDelta.x, mouseDelta.y);
 
         // Clamp and apply the local x value first, so as not to be affected by world transforms.
         if (clampInDegrees.x < 360)
