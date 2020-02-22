@@ -328,3 +328,7 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+VTOLVR Unity Project/Temp/*
+VTOLVR Unity Project/Library/*
+VTOLVR Unity Project/Assets/*
+!VTOLVR Unity Project/Assets/_Mods/
