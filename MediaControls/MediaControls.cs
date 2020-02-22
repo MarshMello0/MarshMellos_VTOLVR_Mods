@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
 /*
@@ -26,7 +22,7 @@ public class MediaControls : VTOLMOD
 
     private void Start()
     {
-        HarmonyInstance instance = HarmonyInstance.Create(harmonyID);
+        Harmony instance = new Harmony(harmonyID);
         instance.PatchAll(Assembly.GetExecutingAssembly());
     }
 
