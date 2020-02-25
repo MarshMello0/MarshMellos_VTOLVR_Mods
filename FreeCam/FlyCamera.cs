@@ -5,10 +5,12 @@ public class FlyCamera : MonoBehaviour
     private Vector3 input;
     private float Horizontal, Vertical,x,y,z;
 
-    public Transform target;
+    public Transform target, fixedTransform;
     public Vector3 offset;
 
     public new bool enabled;
+    public enum FollowType { FreeFollow, Fixed };
+    public FollowType followType = FollowType.FreeFollow;
 
     private void Update()
     {
@@ -24,7 +26,10 @@ public class FlyCamera : MonoBehaviour
     {
         if (target != null)
         {
-            transform.position = target.position + offset;
+            if (followType == FollowType.Fixed)
+                transform.localPosition = offset;
+            else
+                transform.position = target.position + offset;
         }
         else
             transform.position = offset;
@@ -47,9 +52,6 @@ public class FlyCamera : MonoBehaviour
         else
             Vertical = 0;
 
-        
-
-
         Vector3 newPos = offset + ((Horizontal * moveSpeed * transform.right) + (Vertical * moveSpeed * transform.forward));
         
         if (Input.GetKey(KeyCode.Space))
@@ -61,7 +63,6 @@ public class FlyCamera : MonoBehaviour
                 Mathf.Lerp(offset.x, newPos.x,Time.fixedDeltaTime),
                 Mathf.Lerp(offset.y, newPos.y,Time.fixedDeltaTime),
                 Mathf.Lerp(offset.z, newPos.z,Time.fixedDeltaTime));
-
     }
 
     private void MouseLook()
@@ -75,7 +76,11 @@ public class FlyCamera : MonoBehaviour
             z -= 1 * Time.deltaTime;
         else if (Input.GetKey(KeyCode.E))
             z += 1 * Time.deltaTime;
-
+        if (followType == FollowType.Fixed && fixedTransform != null)
+        {
+            fixedTransform.localRotation = Quaternion.Euler(-x, y, z);
+            return;
+        }
         transform.localRotation = Quaternion.Euler(-x, y, z);
     }
 
@@ -86,5 +91,26 @@ public class FlyCamera : MonoBehaviour
         if (angle > 360.0f)
             angle -= 360.0f;
         return Mathf.Clamp(angle, min, max);
+    }
+
+    public void CreateCross(Transform parent)
+    {
+        GameObject go = new GameObject("Cross");
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = new Vector3(0, 0, 0);
+        go.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject a = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            a.GetComponent<BoxCollider>().enabled = false;
+            if (i == 0)
+                a.transform.localScale = new Vector3(1, 1, 50);
+            else if (i == 1)
+                a.transform.localScale = new Vector3(50, 1, 1);
+            a.transform.SetParent(go.transform, false);
+            a.transform.localPosition = Vector3.zero;
+            a.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        }
     }
 }

@@ -8,11 +8,13 @@ using UnityEngine.UI;
 public class FreeCam : VTOLMOD
 {
     private static readonly string assetsPath = @"VTOLVR_ModLoader\mods\FreeCam\freecam.assets";
+    public static FreeCam _instance { get; private set; }
     private static AssetBundle asset;
     private static GameObject canvasPrefab;
-    public static GameObject cameraPrefab;
+    public static GameObject cameraPrefab, waypointTextPrefab;
     private void Awake()
     {
+        _instance = this;
         StartCoroutine(Load());
     }
 
@@ -32,10 +34,13 @@ public class FreeCam : VTOLMOD
             //Storing the prefab in memory to spawn
             AssetBundleRequest canvasRequest = asset.LoadAssetAsync<GameObject>("Free Cam - Canvas");
             AssetBundleRequest cameraRequest = asset.LoadAssetAsync<GameObject>("Free Cam - Camera");
+            AssetBundleRequest waypointRequest = asset.LoadAssetAsync<GameObject>("Waypoint Text");
             yield return canvasRequest;
             yield return cameraRequest;
+            yield return waypointRequest;
             canvasPrefab = canvasRequest.asset as GameObject;
             cameraPrefab = cameraRequest.asset as GameObject;
+            waypointTextPrefab = waypointRequest.asset as GameObject;
             //Adding the scripts to the prefab;
             Log("Adding Scripts");
             UIManager manager = canvasPrefab.AddComponent<UIManager>();
@@ -50,19 +55,22 @@ public class FreeCam : VTOLMOD
             manager.freecamText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
             manager.mouselookOver = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(2).gameObject.AddComponent<MouseOver>();
             manager.mouselookText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>();
-            manager.refreshActorsOver = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(9).gameObject.AddComponent<MouseOver>();
+            manager.refreshActorsOver = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(10).gameObject.AddComponent<MouseOver>();
             Log("Getting Texts");
             manager.speedText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(4).GetComponent<TextMeshProUGUI>();
             manager.sSpeedText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(5).GetComponent<TextMeshProUGUI>();
             manager.sensitivityText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(6).GetComponent<TextMeshProUGUI>();
             manager.fovText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(7).GetComponent<TextMeshProUGUI>();
+            manager.rotationText = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(8).GetComponent<TextMeshProUGUI>();
             Log("Getting Sliders");
             manager.speedSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(4).GetComponentInChildren<Slider>();
             manager.sSpeedSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(5).GetComponentInChildren<Slider>();
             manager.sensitivitySlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(6).GetComponentInChildren<Slider>();
             manager.fovSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(7).GetComponentInChildren<Slider>();
+            manager.rotationSlider = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(8).GetComponentInChildren<Slider>();
             Log("Adding Dropdown");
-            manager.actorDropdown = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(8).GetComponentInChildren<TMP_Dropdown>();
+            manager.actorDropdown = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(9).GetComponentInChildren<TMP_Dropdown>();
+            manager.followTypeDropdown = canvasPrefab.transform.GetChild(2).GetChild(2).GetChild(0).GetChild(11).GetComponentInChildren<TMP_Dropdown>();
 
             UIManager.speed = manager.speedSlider.value;
             UIManager.sSpeed = manager.sSpeedSlider.value;
@@ -73,6 +81,7 @@ public class FreeCam : VTOLMOD
             manager.sSpeedText.text += " = " + UIManager.sSpeed;
             manager.sensitivityText.text += " = " + UIManager.sensitivity;
             manager.fovText.text += " = " + UIManager.fov;
+            manager.rotationText.text += " " + UIManager.rotSpeed;
 
             Log("Spawned!");
             DontDestroyOnLoad(Instantiate(canvasPrefab));

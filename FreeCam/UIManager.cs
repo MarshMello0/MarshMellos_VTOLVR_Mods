@@ -6,23 +6,25 @@ using UnityEngine.SceneManagement;
 using TMPro;
 public class UIManager : MonoBehaviour
 {
+    public static UIManager _instance { get; private set; }
     public RectTransform openPos, closePos;
     public RectTransform rectTransform;
     public AnimationCurve movementCurve;
     public float time;
-    private bool uiOpen, freecamEnabled, mouseLookEnabled, uiVisable;
+    private bool uiOpen, freecamEnabled, mouseLookEnabled, uiVisable, waitingForTarget;
 
     public MouseOver toggleUI, freecamOver,mouselookOver, refreshActorsOver;
-    public TextMeshProUGUI freecamText, mouselookText, speedText, sSpeedText, sensitivityText,fovText;
+    public TextMeshProUGUI freecamText, mouselookText, speedText, sSpeedText, sensitivityText,fovText, rotationText;
     public FlyCamera camera;
     public Camera cam;
-    public Slider speedSlider, sSpeedSlider, sensitivitySlider, fovSlider;
-    public TMP_Dropdown actorDropdown;
+    public Slider speedSlider, sSpeedSlider, sensitivitySlider, fovSlider, rotationSlider;
+    public TMP_Dropdown actorDropdown, followTypeDropdown;
 
-    public static float speed, sSpeed, sensitivity, fov;
+    public static float speed, sSpeed, sensitivity, fov, rotSpeed;
 
     private void Awake()
     {
+        _instance = this;
         SceneManager.sceneLoaded += SceneLoaded;
         uiVisable = true;
     }
@@ -60,11 +62,15 @@ public class UIManager : MonoBehaviour
         actorDropdown.onValueChanged.AddListener(SelectedActor);
         fovSlider.onValueChanged.RemoveAllListeners();
         fovSlider.onValueChanged.AddListener(FOVChanged);
+        rotationSlider.onValueChanged.RemoveAllListeners();
+        rotationSlider.onValueChanged.AddListener(RotationSpeedChanged);
+        followTypeDropdown.onValueChanged.RemoveAllListeners();
+        followTypeDropdown.onValueChanged.AddListener(FollowTypeChanged);
     }
 
     public void ToggleUI()
     {
-        Debug.Log("Toggling UI");
+        Log("Toggling UI");
         StartCoroutine(Toggle());
     }
 
@@ -100,7 +106,7 @@ public class UIManager : MonoBehaviour
             }
 
         }
-        Debug.Log("Finished Toggling UI");
+        Log("Finished Toggling UI");
     }
 
     public void ToggleFreeCam()
@@ -179,7 +185,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateActors()
     {
-        Debug.Log("Updating Actors");
+        Log("Updating Actors");
         actorDropdown.options.Clear();
         actorDropdown.options.Add(new TMP_Dropdown.OptionData("No Actor"));
         for (int i = 0; i < TargetManager.instance.allActors.Count; i++)
@@ -190,7 +196,7 @@ public class UIManager : MonoBehaviour
 
     public void SelectedActor(int value)
     {
-        Debug.Log("Selected Actor " + value);
+        Log("Selected Actor " + value);
         if (value == 0)
         {
             camera.target = null;
@@ -204,10 +210,14 @@ public class UIManager : MonoBehaviour
         {
             camera.target = TargetManager.instance.allActors[value].transform;
             camera.offset = new Vector3(0, 0, 0);
+            camera.CreateCross(camera.target);
+            if (camera.followType == FlyCamera.FollowType.Fixed)
+                camera.transform.SetParent(camera.target);
+
         }
         else
         {
-            Debug.LogError("Camera was null, when selecting an actor");
+            LogError("Camera was null, when selecting an actor");
             actorDropdown.value = 0;
         }
     }
@@ -220,5 +230,45 @@ public class UIManager : MonoBehaviour
         {
             cam.fieldOfView = value;
         }
+    }
+    public void RotationSpeedChanged(float value)
+    {
+        rotSpeed = value;
+        rotationText.text = "Rotation = " + value;
+    }
+    public void FollowTypeChanged(int index)
+    {
+        camera.followType = index == 0 ? FlyCamera.FollowType.FreeFollow : FlyCamera.FollowType.Fixed;
+        Log("Changed follow type to " + camera.followType);
+        if (camera.followType == FlyCamera.FollowType.Fixed && camera.target != null)
+            camera.transform.SetParent(camera.target);
+        else if (camera.followType == FlyCamera.FollowType.Fixed)
+            waitingForTarget = true;
+
+        if (camera.followType == FlyCamera.FollowType.FreeFollow)
+            camera.transform.parent = null;
+
+    }
+    public void FollowTypeChanged(int index, bool forceUI)
+    {
+        if (forceUI)
+        {
+            followTypeDropdown.value = index;
+            followTypeDropdown.RefreshShownValue();
+        }
+        FollowTypeChanged(index);
+    }
+
+    public void Log(object message)
+    {
+        FreeCam._instance.Log(message);
+    }
+    public void LogWarning(object message)
+    {
+        FreeCam._instance.LogWarning(message);
+    }
+    public void LogError(object message)
+    {
+        FreeCam._instance.LogError(message);
     }
 }
