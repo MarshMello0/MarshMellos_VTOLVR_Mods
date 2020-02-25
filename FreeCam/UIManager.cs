@@ -134,6 +134,7 @@ public class UIManager : MonoBehaviour
         go.AddComponent<FloatingOriginTransform>();
         cam = go.GetComponent<Camera>();
         cam.farClipPlane = 999999; //Float.maxvalue does some weaird stuff.
+        cam.fieldOfView = fovSlider.value;
         camera = go.AddComponent<FlyCamera>();
         camera.enabled = false;
         if (VRHead.instance != null)
